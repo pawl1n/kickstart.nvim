@@ -11,12 +11,6 @@ return {
         cmp.setup.buffer({ sources = { { name = "crates" } } })
       end,
     })
-    require('crates').setup {
-      src = {
-        cmp = {
-          enabled = true,
-        }
-      }
-    }
+    require('crates').setup()
   end,
 }
