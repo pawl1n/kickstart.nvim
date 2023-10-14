@@ -476,7 +476,13 @@ local servers = {
   -- clangd = {},
   -- gopls = {},
   -- pyright = {},
-  rust_analyzer = {},
+  rust_analyzer = {
+    ['rust-analyzer'] = {
+      checkOnSave = {
+        command = "clippy",
+      }
+    }
+  },
   -- tsserver = {},
   -- html = { filetypes = { 'html', 'twig', 'hbs' } },
 
@@ -514,7 +520,30 @@ mason_lspconfig.setup_handlers {
   end,
 
   ["rust_analyzer"] = function()
-    require("rust-tools").setup {}
+    local rt = require("rust-tools")
+    rt.setup {
+      server = {
+        capabilities = capabilities,
+        on_attach = function(server, bufnr)
+          on_attach(server, bufnr)
+
+          local nmap = function(keys, func, desc)
+            if desc then
+              desc = 'Rust-tools: ' .. desc
+            end
+
+            vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
+          end
+          -- Hover actions
+          nmap('K', rt.hover_actions.hover_actions, 'Hover actions')
+          -- Code action groups
+          nmap('<leader>ca', rt.code_action_group.code_action_group, 'Code action group')
+          -- vim.keymap.set("n", "<Leader>a", rt.code_action_group.code_action_group, { buffer = bufnr })
+        end,
+        settings = servers["rust_analyzer"],
+        filetypes = (servers["rust_analyzer"] or {}).filetypes,
+      }
+    }
   end
 }
 
