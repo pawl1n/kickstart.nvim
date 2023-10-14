@@ -476,7 +476,7 @@ local servers = {
   -- clangd = {},
   -- gopls = {},
   -- pyright = {},
-  -- rust_analyzer = {},
+  rust_analyzer = {},
   -- tsserver = {},
   -- html = { filetypes = { 'html', 'twig', 'hbs' } },
 
@@ -484,6 +484,7 @@ local servers = {
     Lua = {
       workspace = { checkThirdParty = false },
       telemetry = { enable = false },
+      hint = { enable = true },
     },
   },
 }
@@ -511,6 +512,10 @@ mason_lspconfig.setup_handlers {
       filetypes = (servers[server_name] or {}).filetypes,
     }
   end,
+
+  ["rust_analyzer"] = function()
+    require("rust-tools").setup {}
+  end
 }
 
 -- [[ Configure nvim-cmp ]]
