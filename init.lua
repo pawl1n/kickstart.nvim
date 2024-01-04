@@ -44,6 +44,14 @@ P.S. You can delete this when you're done too. It's your config now :)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
+-- Set fold settings
+vim.opt.foldmethod = 'expr'
+vim.opt.foldexpr = 'nvim_treesitter#foldexpr()'
+vim.opt.foldlevel = 99
+vim.opt.foldenable = true
+vim.o.fillchars = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]]
+vim.o.foldcolumn = '1'
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    https://github.com/folke/lazy.nvim
 --    `:help lazy.nvim.txt` for more info
@@ -88,7 +96,7 @@ require('lazy').setup({
 
       -- Useful status updates for LSP
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-      { 'j-hui/fidget.nvim', opts = {} },
+      { 'j-hui/fidget.nvim',       opts = {} },
 
       -- Additional lua configuration, makes nvim stuff amazing!
       'folke/neodev.nvim',
@@ -577,13 +585,13 @@ local servers = {
   -- clangd = {},
   -- gopls = {},
   -- pyright = {},
-  rust_analyzer = {
-    ['rust-analyzer'] = {
-      checkOnSave = {
-        command = "clippy",
-      }
-    }
-  },
+  -- rust_analyzer = {
+  --   ['rust-analyzer'] = {
+  --     checkOnSave = {
+  --       command = "clippy",
+  --     }
+  --   }
+  -- },
   -- tsserver = {},
   -- html = { filetypes = { 'html', 'twig', 'hbs' } },
 
@@ -612,83 +620,32 @@ mason_lspconfig.setup {
   ensure_installed = vim.tbl_keys(servers),
 }
 
-local dap_adapter = function()
-  local ok, mason_registry = pcall(require, "mason-registry")
-  local adapter ---@type any
-
-  if ok then
-    -- rust tools configuration for debugging support
-    mason_registry.refresh();
-    local codelldb = mason_registry.get_package("codelldb")
-    local extension_path = codelldb:get_install_path() .. "/extension/"
-    local codelldb_path = extension_path .. "adapter/codelldb"
-    local liblldb_path = ""
-
-    local this_os = vim.loop.os_uname().sysname;
-    if this_os:find "Windows" then
-      codelldb_path = extension_path .. "adapter\\codelldb.exe"
-      liblldb_path = extension_path .. "lldb\\bin\\liblldb.dll"
-    else
-      liblldb_path = liblldb_path .. (this_os == "Linux" and ".so" or ".dylib")
-    end
-
-    adapter = require("rust-tools.dap").get_codelldb_adapter(codelldb_path, liblldb_path)
-  end
-  return adapter
-end
 
 mason_lspconfig.setup_handlers {
   function(server_name)
     require('lspconfig')[server_name].setup {
       capabilities = capabilities,
-      on_attach = on_attach,
+      -- on_attach = on_attach,
       settings = servers[server_name],
       filetypes = (servers[server_name] or {}).filetypes,
     }
   end,
-
-  ["rust_analyzer"] = function()
-    local rt = require("rust-tools")
-    rt.setup {
-
-      dap = {
-        adapter = dap_adapter(),
-      },
-      tools = {
-        on_initialized = function()
-          vim.cmd([[
-              augroup RustLSP
-                autocmd CursorHold                      *.rs silent! lua vim.lsp.buf.document_highlight()
-                autocmd CursorMoved,InsertEnter         *.rs silent! lua vim.lsp.buf.clear_references()
-                autocmd BufEnter,CursorHold,InsertLeave *.rs silent! lua vim.lsp.codelens.refresh()
-              augroup END
-            ]])
-        end,
-      },
-      server = {
-        capabilities = capabilities,
-        on_attach = function(server, bufnr)
-          on_attach(server, bufnr)
-
-          local nmap = function(keys, func, desc)
-            if desc then
-              desc = 'Rust-tools: ' .. desc
-            end
-
-            vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
-          end
-          -- Hover actions
-          nmap('K', rt.hover_actions.hover_actions, 'Hover actions')
-          -- Code action groups
-          nmap('<leader>ca', rt.code_action_group.code_action_group, 'Code action group')
-          -- vim.keymap.set("n", "<Leader>a", rt.code_action_group.code_action_group, { buffer = bufnr })
-        end,
-        settings = servers["rust_analyzer"],
-        filetypes = (servers["rust_analyzer"] or {}).filetypes,
-      }
-    }
-  end
 }
+
+-- Setup LspAttach handler
+vim.api.nvim_create_autocmd('LspAttach', {
+  callback = function(ev)
+    on_attach(ev.client, ev.buf)
+
+    -- Add inlay hint toggle
+    if vim.lsp.inlay_hint then
+      vim.keymap.set('n', '<leader>ti',
+        function() vim.lsp.inlay_hint.enable(nil, vim.lsp.inlay_hint.is_enabled() == false) end,
+        { desc = '[T]oggle [I]nlay hints' })
+    end
+  end,
+})
+
 
 -- [[ Configure nvim-cmp ]]
 -- See `:help cmp`
