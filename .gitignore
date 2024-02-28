@@ -2,4 +2,9 @@ tags
 test.sh
 .luarc.json
 nvim
+<<<<<<< HEAD
+=======
+
+spell/
+>>>>>>> 465d6f25c23dc6be27746b758253168adf9cb5bb
 lazy-lock.json
