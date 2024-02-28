@@ -1,17 +1,17 @@
 vim.g.rustaceanvim = {
   server = {
     settings = {
-      ["rust-analyzer"] = {
+      ['rust-analyzer'] = {
         checkOnSave = {
-          command = "clippy",
-        }
-      }
-    }
-  }
+          command = 'clippy',
+        },
+      },
+    },
+  },
 }
 
 return {
   'mrcjkb/rustaceanvim',
-  version = '^3', -- Recommended
+  version = '^4', -- Recommended
   ft = { 'rust' },
 }
