@@ -576,11 +576,13 @@ require('lazy').setup {
         -- tsserver = {},
         --
         ltex = {
-          ltex = {
-            language = 'auto',
-            checkFrequency = 'edit',
-            additionalRules = {
-              enablePickyRules = true,
+          settings = {
+            ltex = {
+              language = 'auto',
+              checkFrequency = 'edit',
+              additionalRules = {
+                enablePickyRules = true,
+              },
             },
           },
         },
