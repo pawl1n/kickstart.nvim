@@ -544,18 +544,6 @@ require('lazy').setup {
         -- tsserver = {},
         --
 
-        ltex = {
-          settings = {
-            ltex = {
-              language = 'auto',
-              checkFrequency = 'edit',
-              additionalRules = {
-                enablePickyRules = true,
-              },
-            },
-          },
-        },
-
         lua_ls = {
           -- cmd = {...},
           -- filetypes { ...},
