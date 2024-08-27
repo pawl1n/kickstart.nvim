@@ -865,8 +865,6 @@ require('lazy').setup({
           dark = 'frappe',
         },
       }
-      -- Load the colorscheme here
-      vim.cmd.colorscheme 'catppuccin'
     end,
   },
   {
@@ -983,6 +981,8 @@ require('lazy').setup({
     },
   },
 })
+
+vim.cmd.colorscheme 'gruvbox'
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
