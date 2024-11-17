@@ -615,7 +615,8 @@ require('lazy').setup({
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         -- ts_ls = {},
         --
-
+        --
+        --
         ltex = {
           settings = {
             ltex = {
@@ -859,7 +860,7 @@ require('lazy').setup({
     priority = 1000, -- make sure to load this before all the other start plugins
     config = function()
       require('catppuccin').setup {
-        flavour = 'frappe', -- latte, frappe, macchiato, mocha
+        flavour = 'auto', -- latte, frappe, macchiato, mocha
         background = { -- :h background
           light = 'latte',
           dark = 'frappe',
@@ -982,7 +983,7 @@ require('lazy').setup({
   },
 })
 
-vim.cmd.colorscheme 'gruvbox'
+vim.cmd.colorscheme 'catppuccin'
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
