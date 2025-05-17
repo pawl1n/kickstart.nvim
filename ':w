@@ -652,6 +652,12 @@ require('lazy').setup({
             },
           },
         },
+
+        ['sonarlint-language-server'] = {
+          settings = {
+            sonarlint = {},
+          },
+        },
       }
 
       -- Ensure the servers and tools above are installed
@@ -667,8 +673,6 @@ require('lazy').setup({
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
-        'jdtls',
-        'sonarlint-language-server',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -682,9 +686,6 @@ require('lazy').setup({
             server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
             require('lspconfig')[server_name].setup(server)
           end,
-          -- this is the "custom handler" for `jdtls`
-          -- noop is an empty function that doesn't do anything
-          jdtls = function() end,
         },
       }
     end,
